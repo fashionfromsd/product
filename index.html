@@ -2,129 +2,469 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fashion Shop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fashion eCommerce</title>
   <style>
+    /* --- Basic Reset & Fonts --- */
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #f0f0f0;
+      color: #333;
     }
-    .login-page, .home-page {
-      display: none;
-      padding: 20px;
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
     }
-    .visible {
-      display: block !important;
+    /* --- Header --- */
+    header {
+      background: #222;
+      color: #fff;
+      padding: 20px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .login-btn {
-      background: #4285F4;
-      color: white;
-      padding: 12px 20px;
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 24px;
+    }
+    #user-info {
+      font-size: 14px;
+      color: #aaa;
+    }
+    button {
+      background: #00e676;
       border: none;
-      border-radius: 5px;
-      font-size: 16px;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #1de9b6;
+    }
+    /* --- Search Bar --- */
+    #search-bar {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+    /* --- Product Grid --- */
+    #product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
     }
     .product-card {
       background: white;
-      padding: 10px;
-      margin-bottom: 10px;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: box-shadow 0.3s ease;
     }
-    .product-img {
+    .product-card:hover {
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    }
+    .product-card img {
       width: 100%;
-      max-height: 200px;
+      height: 220px;
       object-fit: cover;
+    }
+    .product-info {
+      padding: 15px;
+      flex-grow: 1;
+    }
+    .product-info h3 {
+      margin: 0 0 10px 0;
+      font-size: 20px;
+      color: #222;
+    }
+    .product-info p {
+      font-size: 14px;
+      color: #555;
+      margin: 0 0 10px 0;
+    }
+    .product-price {
+      font-weight: 700;
+      color: #e91e63;
+      font-size: 18px;
+    }
+    .product-actions {
+      padding: 15px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-primary {
+      flex-grow: 1;
+      background: #2979ff;
+      color: white;
+      border-radius: 6px;
+      padding: 10px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: #448aff;
+    }
+    /* --- Cart and Checkout --- */
+    #cart-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #cart-content {
+      background: white;
+      max-width: 500px;
+      width: 90%;
       border-radius: 8px;
+      padding: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    #cart-content h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    #cart-items {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+    #cart-items li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    #cart-total {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 15px;
+      text-align: right;
+    }
+    #close-cart {
+      background: #ff5252;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #checkout-button {
+      background: #00e676;
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    /* --- Responsive --- */
+    @media (max-width: 600px) {
+      .product-card img {
+        height: 180px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      #user-info {
+        font-size: 12px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Login Page -->
-  <div class="login-page visible" id="loginPage">
-    <h2>Sign in to continue</h2>
-    <button class="login-btn" onclick="googleLogin()">Sign in with Google</button>
+<header class="container">
+  <h1>Fashion eCommerce</h1>
+  <div>
+    <span id="user-info">Not logged in</span>
+    <button id="login-btn">Login with Google</button>
+    <button id="logout-btn" style="display:none;">Logout</button>
+    <button id="cart-btn" style="display:none;">Cart (0)</button>
   </div>
+</header>
 
-  <!-- Home Page -->
-  <div class="home-page" id="homePage">
-    <h2>Welcome to Fashion Shop</h2>
-    <div id="productList"></div>
+<div class="container">
+  <input type="text" id="search-bar" placeholder="Search products..." />
+  <div id="product-grid"></div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cart-modal">
+  <div id="cart-content">
+    <h2>Your Cart</h2>
+    <ul id="cart-items"></ul>
+    <div id="cart-total">Total: ৳0</div>
+    <button id="checkout-button">Checkout</button>
+    <button id="close-cart">Close</button>
   </div>
+</div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCljPMhDFq4z2CW-JEzMZgxdeAAkkxgDEM",
-      authDomain: "online-shope-de555.firebaseapp.com",
-      databaseURL: "https://online-shope-de555-default-rtdb.firebaseio.com",
-      projectId: "online-shope-de555",
-      storageBucket: "online-shope-de555.appspot.com",
-      messagingSenderId: "1026271402634",
-      appId: "1:1026271402634:web:46e6cb05f7013d15f06b73"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+<script>
+  // Firebase config (Replace with your own config)
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
 
-    function googleLogin() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result => {
-          const user = result.user;
-          const email = user.email.replace('@gmail.com', '');
-          db.ref('users/' + email).once('value').then(snap => {
-            const info = snap.val();
-            if (info && info.blocked) {
-              alert('আপনার একাউন্টটি ব্যান করা হয়েছে');
-              auth.signOut();
-            } else {
-              if (!info) {
-                db.ref('users/' + email).set({ blocked: false });
-              }
-              showHomePage();
-            }
-          });
-        })
-        .catch(e => {
-          alert('Login failed: ' + e.message);
-        });
-    }
+  firebase.initializeApp(firebaseConfig);
 
-    function showHomePage() {
-      document.getElementById('loginPage').classList.remove('visible');
-      document.getElementById('homePage').classList.add('visible');
+  const auth = firebase.auth();
+  const db = firebase.database();
+
+  // Elements
+  const loginBtn = document.getElementById('login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userInfo = document.getElementById('user-info');
+  const productGrid = document.getElementById('product-grid');
+  const searchBar = document.getElementById('search-bar');
+  const cartBtn = document.getElementById('cart-btn');
+  const cartModal = document.getElementById('cart-modal');
+  const closeCartBtn = document.getElementById('close-cart');
+  const cartItemsList = document.getElementById('cart-items');
+  const cartTotal = document.getElementById('cart-total');
+  const checkoutBtn = document.getElementById('checkout-button');
+
+  let products = {};
+  let cart = {};
+  let currentUser = null;
+
+  // Google Login
+  loginBtn.onclick = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(e => alert(e.message));
+  };
+
+  logoutBtn.onclick = () => {
+    auth.signOut();
+  };
+
+  // Auth State Change
+  auth.onAuthStateChanged(user => {
+    if(user){
+      currentUser = user;
+      userInfo.textContent = `Logged in as: ${user.displayName}`;
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-block';
+      cartBtn.style.display = 'inline-block';
       loadProducts();
+      loadCart();
+    } else {
+      currentUser = null;
+      userInfo.textContent = 'Not logged in';
+      loginBtn.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
+      cartBtn.style.display = 'none';
+      productGrid.innerHTML = '<p>Please login to see products.</p>';
+      clearCartUI();
+    }
+  });
+
+  // Load products from Firebase
+  function loadProducts(){
+    db.ref('products').once('value').then(snapshot => {
+      products = snapshot.val() || {};
+      displayProducts(products);
+    });
+  }
+
+  // Display products in grid
+  function displayProducts(productsToShow){
+    productGrid.innerHTML = '';
+    if(Object.keys(productsToShow).length === 0){
+      productGrid.innerHTML = '<p>No products found.</p>';
+      return;
+    }
+    Object.entries(productsToShow).forEach(([id, product]) => {
+      const div = document.createElement('div');
+      div.classList.add('product-card');
+      div.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" />
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p>${product.desc}</p>
+          <div class="product-price">৳${product.price}</div>
+        </div>
+        <div class="product-actions">
+          <button class="btn-primary" onclick="addToCart('${id}')">Add to Cart</button>
+        </div>
+      `;
+      productGrid.appendChild(div);
+    });
+  }
+
+  // Search products
+  searchBar.addEventListener('input', e => {
+    const query = e.target.value.toLowerCase();
+    const filtered = {};
+    for(const [id, prod] of Object.entries(products)){
+      if(prod.name.toLowerCase().includes(query) || prod.desc.toLowerCase().includes(query)){
+        filtered[id] = prod;
+      }
+    }
+    displayProducts(filtered);
+  });
+
+  // Add to cart
+  function addToCart(productId){
+    if(!currentUser){
+      alert('Please login first!');
+      return;
+    }
+    if(cart[productId]){
+      cart[productId].qty++;
+    } else {
+      cart[productId] = { ...products[productId], qty: 1 };
+    }
+    saveCart();
+    alert('Product added to cart');
+    updateCartBtnCount();
+  }
+
+  // Save cart to Firebase
+  function saveCart(){
+    if(currentUser){
+      db.ref('users/' + currentUser.uid + '/cart').set(cart);
+    }
+  }
+
+  // Load cart from Firebase
+  function loadCart(){
+    if(!currentUser) return;
+    db.ref('users/' + currentUser.uid + '/cart').once('value').then(snap => {
+      cart = snap.val() || {};
+      updateCartBtnCount();
+    });
+  }
+
+  // Update Cart button count
+  function updateCartBtnCount(){
+    const count = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+    cartBtn.textContent = `Cart (${count})`;
+  }
+
+  // Show Cart Modal
+  cartBtn.onclick = () => {
+    renderCart();
+    cartModal.style.display = 'flex';
+  };
+
+  closeCartBtn.onclick = () => {
+    cartModal.style.display = 'none';
+  };
+
+  // Render Cart items
+  function renderCart(){
+    cartItemsList.innerHTML = '';
+    let total = 0;
+    if(Object.keys(cart).length === 0){
+      cartItemsList.innerHTML = '<li>Your cart is empty.</li>';
+      cartTotal.textContent = 'Total: ৳0';
+      checkoutBtn.disabled = true;
+      return;
+    }
+    checkoutBtn.disabled = false;
+    for(const [id, item] of Object.entries(cart)){
+      const li = document.createElement('li');
+      li.textContent = `${item.name} × ${item.qty} - ৳${(item.price * item.qty).toFixed(2)}`;
+      // Add remove button
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.style.marginLeft = '10px';
+      removeBtn.style.background = '#ff5252';
+      removeBtn.style.color = 'white';
+      removeBtn.style.border = 'none';
+      removeBtn.style.padding = '2px 6px';
+      removeBtn.style.borderRadius = '4px';
+      removeBtn.style.cursor = 'pointer';
+      removeBtn.onclick = () => {
+        delete cart[id];
+        saveCart();
+        renderCart();
+        updateCartBtnCount();
+      };
+      li.appendChild(removeBtn);
+      cartItemsList.appendChild(li);
+      total += item.price * item.qty;
+    }
+    cartTotal.textContent = `Total: ৳${total.toFixed(2)}`;
+  }
+
+  // Checkout (simulate order & payment)
+  checkoutBtn.onclick = () => {
+    if(Object.keys(cart).length === 0){
+      alert('Your cart is empty!');
+      return;
     }
 
-    function loadProducts() {
-      db.ref('products').limitToFirst(20).once('value').then(snapshot => {
-        const list = document.getElementById('productList');
-        list.innerHTML = '';
-        const data = snapshot.val();
-        if (data) {
-          Object.entries(data).forEach(([id, p]) => {
-            const div = document.createElement('div');
-            div.className = 'product-card';
-            div.innerHTML = `
-              <img class="product-img" src="${p.image}" alt="${p.name}" />
-              <h3>${p.name}</h3>
-              <p>${p.desc}</p>
-              <p><b>${p.price}৳</b> (${p.discount}% off)</p>
-            `;
-            list.appendChild(div);
-          });
-        } else {
-          list.innerHTML = '<p>No products found</p>';
-        }
-      });
-    }
-  </script>
+    // Save order to Firebase under current user
+    const orderData = {
+      products: cart,
+      totalAmount: Object.values(cart).reduce((acc, item) => acc + item.price * item.qty, 0),
+      orderTime: Date.now(),
+      paymentStatus: "pending"
+    };
+
+    // Here you can add payment integration e.g. redirect to payment gateway, but for demo, just save order.
+
+    const newOrderRef = db.ref('orders').push();
+    newOrderRef.set({
+      userId: currentUser.uid,
+      ...orderData
+    }).then(() => {
+      alert('Order placed! Please complete the payment via the payment link.');
+
+      // Clear cart
+      cart = {};
+      saveCart();
+      renderCart();
+      updateCartBtnCount();
+      cartModal.style.display = 'none';
+
+      // Open payment links page or show payment links here
+      window.open('payment_links.html', '_blank'); // assuming you create payment_links.html
+    }).catch(() => {
+      alert('Failed to place order.');
+    });
+  };
+
+</script>
+
 </body>
 </html>
